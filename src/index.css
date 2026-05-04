@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #00E5FF; /* Cyan */
+  --color-accent: #FF007F;  /* Magenta */
+  --color-surface-dark: #16213E; /* Navy */
+  --color-bg-dark: #1A1A2E; /* Midnight */
+  
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+@layer base {
+  body {
+    @apply bg-[var(--color-bg-dark)] text-slate-200 antialiased;
+  }
+}
+
+@layer components {
+  .neon-border {
+    @apply border border-[var(--color-primary)] shadow-[0_0_10px_rgba(0,229,255,0.3)];
+  }
+  
+  .neon-text {
+    @apply text-[var(--color-primary)] drop-shadow-[0_0_5px_rgba(0,229,255,0.5)];
+  }
+  
+  .neon-button {
+    @apply px-4 py-2 rounded-lg bg-[var(--color-primary)] text-[var(--color-bg-dark)] font-bold transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(0,229,255,0.6)] active:scale-95;
+  }
+  
+  .card-gradient {
+    @apply bg-gradient-to-br from-[var(--color-surface-dark)] to-[#0F172A] border border-slate-800;
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "entities": {
+    "character": {
+      "title": "Character",
+      "description": "A roleplay character in the Hazbin universe",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Character name" },
+        "description": { "type": "string", "description": "Brief character description" },
+        "avatar": { "type": "string", "description": "URL to character image" },
+        "class": { "type": "string", "enum": ["Angel", "Demon", "Human", "Other"] },
+        "rank": { "type": "string", "description": "Rank or power level" },
+        "status": { "type": "string", "enum": ["Libre", "Ocupado", "Reservado"] },
+        "ownerId": { "type": "string", "description": "UID of the user playing this character, if any" },
+        "ownerName": { "type": "string", "description": "Display name of the user" }
+      },
+      "required": ["name", "status"]
+    },
+    "roleRequest": {
+      "title": "Role Request",
+      "description": "A request to play a specific character",
+      "type": "object",
+      "properties": {
+        "characterId": { "type": "string" },
+        "characterName": { "type": "string" },
+        "applicantName": { "type": "string" },
+        "applicantClass": { "type": "string", "enum": ["Angel", "Demon", "Human", "Other"] },
+        "applicantRank": { "type": "string" },
+        "roleTest": { "type": "string", "description": "A 20+ line roleplay sample" },
+        "status": { "type": "string", "enum": ["Pending", "Approved", "Rejected"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "userId": { "type": "string", "description": "UID of the requester" }
+      },
+      "required": ["characterId", "applicantName", "roleTest", "status"]
+    },
+    "userProfile": {
+      "title": "User Profile",
+      "description": "Additional user data",
+      "type": "object",
+      "properties": {
+        "displayName": { "type": "string" },
+        "role": { "type": "string", "enum": ["Admin", "Moderator", "User"] }
+      },
+      "required": ["role"]
+    }
+  },
+  "firestore": {
+    "characters": {
+      "schema": "character",
+      "description": "Main character directory"
+    },
+    "requests": {
+      "schema": "roleRequest",
+      "description": "Applications for characters"
+    },
+    "users": {
+      "schema": "userProfile",
+      "description": "User profiles and roles"
+    }
+  }
+}
