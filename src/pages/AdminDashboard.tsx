@@ -391,17 +391,18 @@ export const AdminDashboard: React.FC = () => {
                       </select>
                       
                       {confirmDeleteId === c.id ? (
-                        <div className="flex items-center gap-1 bg-red-500/20 p-1 rounded-lg border border-red-500/30 animate-pulse">
+                        <div className="flex items-center gap-2 bg-red-500/10 p-1 px-2 rounded-lg border border-red-500/30 animate-pulse">
+                          <span className="text-[10px] font-bold text-red-500 uppercase">¿BORRAR?</span>
                           <button 
                             onClick={(e) => { e.stopPropagation(); handleDeleteCharacter(c.id); }}
-                            className="bg-red-500 text-white p-1 rounded hover:bg-red-600"
+                            className="bg-red-500 text-white p-1 rounded hover:bg-red-600 transition-colors"
                             title="Confirmar"
                           >
                             <Check size={14} />
                           </button>
                           <button 
                             onClick={(e) => { e.stopPropagation(); setConfirmDeleteId(null); }}
-                            className="bg-slate-700 text-white p-1 rounded hover:bg-slate-600"
+                            className="bg-slate-700 text-white p-1 rounded hover:bg-slate-600 transition-colors"
                             title="Cancelar"
                           >
                             <X size={14} />
@@ -596,17 +597,18 @@ export const AdminDashboard: React.FC = () => {
                       </div>
                       
                       {confirmDeleteId === u.uid ? (
-                        <div className="flex items-center gap-1 bg-red-500/20 p-1 rounded-lg border border-red-500/30">
+                        <div className="flex items-center gap-2 bg-red-500/10 p-1 px-2 rounded-lg border border-red-500/30">
+                          <span className="text-[10px] font-bold text-red-500 uppercase">¿BORRAR PERFIL?</span>
                           <button 
                             onClick={() => handleDeleteUser(u.uid)}
-                            className="bg-red-500 text-white p-1 rounded hover:bg-red-600"
+                            className="bg-red-500 text-white p-1 rounded hover:bg-red-600 transition-colors"
                             title="Confirmar eliminación del perfil"
                           >
                             <Check size={14} />
                           </button>
                           <button 
                             onClick={() => setConfirmDeleteId(null)}
-                            className="bg-slate-700 text-white p-1 rounded hover:bg-slate-600"
+                            className="bg-slate-700 text-white p-1 rounded hover:bg-slate-600 transition-colors"
                             title="Cancelar"
                           >
                             <X size={14} />

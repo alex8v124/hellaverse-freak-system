@@ -20,7 +20,7 @@ export const Navbar: React.FC = () => {
           <div className="w-8 h-8 rounded-lg bg-primary rotate-12 flex items-center justify-center transition-transform group-hover:rotate-0">
             <span className="text-xl font-black text-slate-900 leading-none">H</span>
           </div>
-          <span className="text-xl font-bold tracking-tighter neon-text">HAZBIN <span className="text-slate-400 font-light">RP</span></span>
+          <span className="text-xl font-bold tracking-tighter neon-text">HELLAVERSE FREAK <span className="text-slate-400 font-light">RP</span></span>
         </Link>
 
         <div className="flex items-center gap-4">

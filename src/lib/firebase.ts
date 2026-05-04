@@ -1,12 +1,27 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { getFirestore, collection, onSnapshot, query, type DocumentData, type QuerySnapshot } from 'firebase/firestore';
+import { getFirestore, collection, onSnapshot, query, type DocumentData, type QuerySnapshot, doc, getDocFromServer } from 'firebase/firestore';
 import firebaseConfig from '../../firebase-applet-config.json';
 export { firebaseConfig };
 
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
 export const auth = getAuth(app);
+
+// Test connection on boot
+async function testConnection() {
+  try {
+    await getDocFromServer(doc(db, 'test', 'connection'));
+    console.log('Firebase connection check: SUCCESS');
+  } catch (error) {
+    if (error instanceof Error && error.message.includes('the client is offline')) {
+      console.error("Please check your Firebase configuration or internet connection.");
+    } else {
+      console.warn("Firestore connection check info:", error);
+    }
+  }
+}
+testConnection();
 
 export enum OperationType {
   CREATE = 'create',
