@@ -51,21 +51,35 @@ export const Home: React.FC = () => {
           <div className="flex flex-col sm:flex-row justify-center gap-4 mt-8">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-xs font-bold text-primary uppercase tracking-widest mb-4 mx-auto sm:mx-0">
               <Sparkles size={14} />
-              Directorio Oficial
+              Portal de Habitantes
             </div>
           </div>
-          <h1 className="text-5xl md:text-6xl font-black neon-text mb-4 tracking-tight">
-            FORJA TU <span className="text-white italic">DESTINO</span>
+          <h1 className="text-5xl md:text-7xl font-black neon-text mb-4 tracking-tighter uppercase italic drop-shadow-[0_5px_15px_rgba(0,255,163,0.3)]">
+            HELLAVERSE <span className="text-white not-italic">FREAK</span>
           </h1>
-          <p className="text-slate-400 max-w-2xl mx-auto px-4 mb-8">
-            Explora los habitantes del infierno y el cielo. Encuentra tu lugar en el caos y solicita tu personaje favorito o propón uno nuevo.
+          <p className="text-slate-400 max-w-2xl mx-auto px-4 mb-10 text-sm md:text-base leading-relaxed">
+            Explora el directorio oficial de personajes. Encuentra tu lugar en el caos, solicita tu personaje favorito o forja tu propio camino con un personaje original.
           </p>
-          <button 
-            onClick={() => navigate('/request/new')}
-            className="neon-button bg-magenta-400 shadow-[0_0_15px_rgba(255,0,127,0.3)] hover:shadow-[0_0_25px_rgba(255,0,127,0.5)] border-none text-white px-8 py-3"
-          >
-            SOLICITAR NUEVO PERSONAJE (OC)
-          </button>
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <button 
+              onClick={() => navigate('/lore')}
+              className="px-8 py-3 rounded-xl border border-slate-700 bg-slate-900/50 text-slate-300 hover:border-primary/50 hover:text-primary transition-all font-bold uppercase tracking-widest text-sm"
+            >
+              Lore & Reglas
+            </button>
+            <button 
+              onClick={() => navigate('/relations')}
+              className="px-8 py-3 rounded-xl border border-slate-700 bg-slate-900/50 text-slate-300 hover:border-primary/50 hover:text-primary transition-all font-bold uppercase tracking-widest text-sm"
+            >
+              Árbol Visual
+            </button>
+            <button 
+              onClick={() => navigate('/request/new')}
+              className="neon-button bg-magenta-400 shadow-[0_0_15px_rgba(255,0,127,0.3)] hover:shadow-[0_0_25px_rgba(255,0,127,0.5)] border-none text-white px-8 py-3"
+            >
+              Solicitar Personaje (OC)
+            </button>
+          </div>
         </motion.div>
       </header>
 

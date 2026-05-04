@@ -42,6 +42,17 @@
         "role": { "type": "string", "enum": ["Admin", "Moderator", "User"] }
       },
       "required": ["role"]
+    },
+    "relationship": {
+      "title": "Relationship",
+      "description": "An edge between two characters in the tree",
+      "type": "object",
+      "properties": {
+        "fromId": { "type": "string" },
+        "toId": { "type": "string" },
+        "type": { "type": "string", "description": "Optional label for the link" }
+      },
+      "required": ["fromId", "toId"]
     }
   },
   "firestore": {
@@ -56,6 +67,10 @@
     "users": {
       "schema": "userProfile",
       "description": "User profiles and roles"
+    },
+    "relationships": {
+      "schema": "relationship",
+      "description": "Connections between characters for the visual tree"
     }
   }
 }

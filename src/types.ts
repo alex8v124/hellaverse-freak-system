@@ -13,6 +13,8 @@ export interface Character {
   status: CharacterStatus;
   ownerId?: string;
   ownerName?: string;
+  x?: number;
+  y?: number;
 }
 
 export interface RoleRequest {

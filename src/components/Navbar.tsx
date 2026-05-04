@@ -23,7 +23,13 @@ export const Navbar: React.FC = () => {
           <span className="text-xl font-bold tracking-tighter neon-text">HELLAVERSE FREAK <span className="text-slate-400 font-light">RP</span></span>
         </Link>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-6">
+          <Link to="/lore" className="text-[10px] font-bold text-slate-400 hover:text-primary transition-colors tracking-[0.2em] uppercase">
+            Lore & Reglas
+          </Link>
+          <Link to="/relations" className="text-[10px] font-bold text-slate-400 hover:text-primary transition-colors tracking-[0.2em] uppercase">
+            Árbol
+          </Link>
           {user ? (
             <div className="flex items-center gap-4">
               {profile?.role === 'Admin' && (

@@ -49,5 +49,12 @@ service cloud.firestore {
       // Master bootstrap
       allow write: if isMaster() && request.auth.uid == userId;
     }
+
+    // --- Relationships ---
+    match /relationships/{relId} {
+      allow read: if true;
+      allow write: if isAdmin();
+      allow delete: if isAdmin();
+    }
   }
 }

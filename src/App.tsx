@@ -8,6 +8,8 @@ import { Login } from './pages/Login';
 import { AdminDashboard } from './pages/AdminDashboard';
 import { SetupAdmin } from './pages/SetupAdmin';
 import { Profile } from './pages/Profile';
+import { Lore } from './pages/Lore';
+import { RelationsTree } from './pages/RelationsTree';
 
 const PrivateRoute: React.FC<{ children: React.ReactNode; adminOnly?: boolean }> = ({ children, adminOnly }) => {
   const { user, profile, loading } = useAuth();
@@ -28,6 +30,8 @@ export default function App() {
           <main>
             <Routes>
               <Route path="/" element={<Home />} />
+              <Route path="/lore" element={<Lore />} />
+              <Route path="/relations" element={<RelationsTree />} />
               <Route path="/request/:id" element={<CharacterRequest />} />
               <Route path="/login" element={<Login />} />
               <Route path="/setup-admin-secret-99" element={<SetupAdmin />} />
