@@ -34,6 +34,32 @@ export const AdminDashboard: React.FC = () => {
     status: 'Libre' as CharacterStatus
   });
 
+  // Edit character form state
+  const [editingChar, setEditingChar] = useState<Character | null>(null);
+
+  const [fileError, setFileError] = useState<string | null>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, isEdit: boolean = false) => {
+    const file = e.target.files?.[0];
+    setFileError(null);
+    if (file) {
+      if (file.size > 1024 * 1024) { // 1MB limit
+        setFileError('La imagen es demasiado grande (máximo 1MB).');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        if (isEdit && editingChar) {
+          setEditingChar({ ...editingChar, avatar: base64String });
+        } else {
+          setNewChar(prev => ({ ...prev, avatar: base64String }));
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   // User management form
   const [newUser, setNewUser] = useState({
     email: '',
@@ -84,6 +110,18 @@ export const AdminDashboard: React.FC = () => {
     } catch (err: any) {
       console.error('Error al actualizar estado:', err);
       alert('Error de permisos: Solo administradores pueden cambiar estados.');
+    }
+  };
+
+  const handleSaveEdit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingChar) return;
+    try {
+      const { id, ...data } = editingChar;
+      await updateDoc(doc(db, 'characters', id!), data);
+      setEditingChar(null);
+    } catch (err) {
+      handleFirestoreError(err, OperationType.UPDATE, `characters/${editingChar.id}`);
     }
   };
 
@@ -290,12 +328,52 @@ export const AdminDashboard: React.FC = () => {
                   value={newChar.name}
                   onChange={e => setNewChar({...newChar, name: e.target.value})}
                 />
-                <input
-                  placeholder="URL Avatar"
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm text-white"
-                  value={newChar.avatar}
-                  onChange={e => setNewChar({...newChar, avatar: e.target.value})}
-                />
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <input
+                      placeholder="URL Avatar (Opcional)"
+                      className="flex-1 bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm text-white"
+                      value={newChar.avatar.startsWith('data:') ? 'Imagen cargada' : newChar.avatar}
+                      onChange={e => setNewChar({...newChar, avatar: e.target.value})}
+                      disabled={newChar.avatar.startsWith('data:')}
+                    />
+                    {newChar.avatar.startsWith('data:') && (
+                      <button 
+                        type="button"
+                        onClick={() => setNewChar({...newChar, avatar: ''})}
+                        className="p-2 text-xs bg-slate-800 text-slate-400 rounded hover:text-white"
+                      >
+                        Limpiar
+                      </button>
+                    )}
+                  </div>
+                  
+                  <div className="relative">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      id="admin-char-upload"
+                      onChange={handleFileChange}
+                    />
+                    <label 
+                      htmlFor="admin-char-upload"
+                      className="w-full flex items-center justify-center gap-2 bg-slate-800 border border-slate-700 border-dashed rounded-lg cursor-pointer hover:bg-slate-700 transition-colors text-[10px] font-bold text-slate-400 py-2"
+                    >
+                      <Plus size={14} /> SUBIR ARCHIVO
+                    </label>
+                  </div>
+                  {fileError && <p className="text-[10px] text-red-500 font-bold">{fileError}</p>}
+                </div>
+
+                {newChar.avatar && (
+                  <div className="flex justify-center py-2">
+                    <div className="w-20 h-20 rounded-xl overflow-hidden border-2 border-primary/30">
+                      <img src={newChar.avatar} alt="Preview" className="w-full h-full object-cover" />
+                    </div>
+                  </div>
+                )}
+                
                 <textarea
                   placeholder="Descripción"
                   className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm text-white"
@@ -372,7 +450,13 @@ export const AdminDashboard: React.FC = () => {
                 .map(c => (
                   <div key={c.id} className="card-gradient rounded-xl p-4 flex items-center justify-between border-slate-800">
                     <div className="flex items-center gap-4">
-                      <img src={c.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${c.name}`} className="w-10 h-10 rounded-full border border-slate-700" alt="" />
+                      <img 
+                        src={c.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${c.name}`} 
+                        className="w-10 h-10 rounded-full border border-slate-700 cursor-pointer hover:border-primary transition-all hover:scale-110 active:scale-95" 
+                        alt={c.name}
+                        title="Click para editar información"
+                        onClick={() => setEditingChar(c)}
+                      />
                       <div>
                         <h3 className="font-bold text-slate-200">{c.name}</h3>
                         <p className="text-[10px] text-slate-500 uppercase">{c.class} • {c.rank || 'S/R'}</p>
@@ -420,6 +504,131 @@ export const AdminDashboard: React.FC = () => {
                   </div>
                 ))}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Character Modal */}
+      {editingChar && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
+            <div className="p-6 border-b border-slate-800 flex justify-between items-center bg-slate-900/50">
+              <h2 className="text-xl font-bold flex items-center gap-2">
+                <Edit size={20} className="text-primary" /> Editar Personaje
+              </h2>
+              <button 
+                onClick={() => setEditingChar(null)}
+                className="p-2 hover:bg-slate-800 rounded-lg transition-colors"
+              >
+                <X size={20} className="text-slate-400" />
+              </button>
+            </div>
+            
+            <form onSubmit={handleSaveEdit} className="p-6 space-y-4 max-h-[70vh] overflow-y-auto custom-scrollbar">
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest pl-1">Nombre</label>
+                <input
+                  required
+                  className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-sm text-white"
+                  value={editingChar.name}
+                  onChange={e => setEditingChar({...editingChar, name: e.target.value})}
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest pl-1">Avatar</label>
+                <div className="flex flex-col gap-2">
+                  <input
+                    placeholder="URL del Avatar"
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-sm text-white"
+                    value={editingChar.avatar.startsWith('data:') ? 'Imagen cargada localmente' : editingChar.avatar}
+                    onChange={e => setEditingChar({...editingChar, avatar: e.target.value})}
+                    disabled={editingChar.avatar.startsWith('data:')}
+                  />
+                  <div className="flex gap-2">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      id="edit-char-upload"
+                      onChange={(e) => handleFileChange(e, true)}
+                    />
+                    <label 
+                      htmlFor="edit-char-upload"
+                      className="flex-1 flex items-center justify-center gap-2 bg-slate-800 border border-slate-700 border-dashed rounded-lg cursor-pointer hover:bg-slate-700 transition-colors text-[10px] font-bold text-slate-400 py-2"
+                    >
+                      <Plus size={14} /> CAMBIAR ARCHIVO
+                    </label>
+                    {editingChar.avatar && (
+                      <button 
+                        type="button"
+                        onClick={() => setEditingChar({...editingChar, avatar: ''})}
+                        className="px-3 bg-red-500/10 text-red-500 border border-red-500/30 rounded-lg hover:bg-red-500 hover:text-white transition-all text-[10px] font-bold"
+                      >
+                        QUITAR
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {editingChar.avatar && (
+                <div className="flex justify-center">
+                  <div className="w-24 h-24 rounded-2xl overflow-hidden border-2 border-primary/50 shadow-lg shadow-primary/10">
+                    <img src={editingChar.avatar} alt="Preview" className="w-full h-full object-cover" />
+                  </div>
+                </div>
+              )}
+
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest pl-1">Descripción</label>
+                <textarea
+                  className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-sm text-white h-24"
+                  value={editingChar.description}
+                  onChange={e => setEditingChar({...editingChar, description: e.target.value})}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest pl-1">Clase</label>
+                  <select 
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-sm text-white"
+                    value={editingChar.class}
+                    onChange={e => setEditingChar({...editingChar, class: e.target.value as CharacterClass})}
+                  >
+                    <option value="Angel">Ángel</option>
+                    <option value="Demon">Demonio</option>
+                    <option value="Human">Humano</option>
+                    <option value="Other">Otro</option>
+                  </select>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest pl-1">Rango</label>
+                  <input
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-sm text-white"
+                    value={editingChar.rank}
+                    onChange={e => setEditingChar({...editingChar, rank: e.target.value})}
+                  />
+                </div>
+              </div>
+
+              <div className="pt-4 flex gap-3">
+                <button 
+                  type="button"
+                  onClick={() => setEditingChar(null)}
+                  className="flex-1 px-4 py-2 bg-slate-800 text-white rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-slate-700 transition-colors"
+                >
+                  CANCELAR
+                </button>
+                <button 
+                  type="submit"
+                  className="flex-1 neon-button flex items-center justify-center gap-2"
+                >
+                  <Save size={16} /> GUARDAR
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

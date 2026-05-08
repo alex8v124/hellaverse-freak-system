@@ -223,7 +223,7 @@ export const CharacterRequest: React.FC = () => {
                           htmlFor="avatar-upload"
                           className="w-full h-full flex items-center justify-center bg-slate-800 border border-slate-700 border-dashed rounded-xl cursor-pointer hover:bg-slate-700 transition-colors text-xs font-bold text-slate-400 py-3"
                         >
-                          SUBIR DESDE PC
+                          SUBIR DESDE ARCHIVO
                         </label>
                       </div>
                     </div>
